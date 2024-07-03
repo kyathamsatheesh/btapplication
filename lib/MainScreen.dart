@@ -1,3 +1,5 @@
+import 'package:btapplication/screens/dashboard.dart';
+import 'package:btapplication/screens/user_creation.dart';
 import 'package:flutter/material.dart';
 import 'package:btapplication/commonscreen/homescreen.dart';
 import '../commonscreen/profilescreen.dart'; // Assuming you have a profile screen
@@ -15,7 +17,9 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _widgetOptions = [
    // DeviceScreen(),
     //ScanScreen(),
-    ProfileScreen(), // Replace or reorder these widgets as necessary
+    FlutterBlueApp(),//Scanned Device List and auto connect devices
+    UserCreationScreen(),
+    //ProfileScreen(), // Replace or reorder these widgets as necessary
     HomeScreen(),
     ProfileScreen()
   ];

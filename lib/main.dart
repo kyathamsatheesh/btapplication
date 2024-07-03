@@ -77,81 +77,96 @@
 //   }
 // }
 
-import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'screens/bluetooth_off_screen.dart';
-import 'screens/scan_screen.dart';
+import 'MainScreen.dart';
 
 void main() {
-  FlutterBluePlus.setLogLevel(LogLevel.verbose, color: true);
-  runApp(const FlutterBlueApp());
+  runApp(MaterialApp(
+    title: 'Device App',
+    theme: ThemeData(
+      primarySwatch: Colors.blue,
+    ),
+    home: MainScreen(),
+  ));
 }
 
-class FlutterBlueApp extends StatefulWidget {
-  const FlutterBlueApp({Key? key}) : super(key: key);
 
-  @override
-  State<FlutterBlueApp> createState() => _FlutterBlueAppState();
-}
+// import 'dart:async';
+// import 'package:flutter/material.dart';
+// import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+// import 'screens/bluetooth_off_screen.dart';
+// import 'screens/scan_screen.dart';
 
-class _FlutterBlueAppState extends State<FlutterBlueApp> {
-  BluetoothAdapterState _adapterState = BluetoothAdapterState.unknown;
+// void main() {
+//   FlutterBluePlus.setLogLevel(LogLevel.verbose, color: true);
+//   runApp(const FlutterBlueApp());
+// }
 
-  late StreamSubscription<BluetoothAdapterState> _adapterStateStateSubscription;
+// class FlutterBlueApp extends StatefulWidget {
+//   const FlutterBlueApp({Key? key}) : super(key: key);
 
-  @override
-  void initState() {
-    super.initState();
-    _adapterStateStateSubscription =
-        FlutterBluePlus.adapterState.listen((state) {
-      _adapterState = state;
-      if (mounted) {
-        setState(() {});
-      }
-    });
-  }
+//   @override
+//   State<FlutterBlueApp> createState() => _FlutterBlueAppState();
+// }
 
-  @override
-  void dispose() {
-    _adapterStateStateSubscription.cancel();
-    super.dispose();
-  }
+// class _FlutterBlueAppState extends State<FlutterBlueApp> {
+//   BluetoothAdapterState _adapterState = BluetoothAdapterState.unknown;
 
-  @override
-  Widget build(BuildContext context) {
-    Widget screen = _adapterState == BluetoothAdapterState.on
-        ? const ScanScreen()
-        : BluetoothOffScreen(adapterState: _adapterState);
+//   late StreamSubscription<BluetoothAdapterState> _adapterStateStateSubscription;
 
-    return MaterialApp(
-      color: Colors.lightBlue,
-      home: screen,
-      navigatorObservers: [BluetoothAdapterStateObserver()],
-    );
-  }
-}
+//   @override
+//   void initState() {
+//     super.initState();
+//     _adapterStateStateSubscription =
+//         FlutterBluePlus.adapterState.listen((state) {
+//       _adapterState = state;
+//       if (mounted) {
+//         setState(() {});
+//       }
+//     });
+//   }
 
-class BluetoothAdapterStateObserver extends NavigatorObserver {
-  StreamSubscription<BluetoothAdapterState>? _adapterStateSubscription;
+//   @override
+//   void dispose() {
+//     _adapterStateStateSubscription.cancel();
+//     super.dispose();
+//   }
 
-  @override
-  void didPush(Route route, Route? previousRoute) {
-    super.didPush(route, previousRoute);
-    if (route.settings.name == '/DeviceScreen') {
-      _adapterStateSubscription ??=
-          FlutterBluePlus.adapterState.listen((state) {
-        if (state != BluetoothAdapterState.on) {
-          navigator?.pop();
-        }
-      });
-    }
-  }
+//   @override
+//   Widget build(BuildContext context) {
+//     Widget screen = _adapterState == BluetoothAdapterState.on
+//         ? const ScanScreen()
+//         : BluetoothOffScreen(adapterState: _adapterState);
 
-  @override
-  void didPop(Route route, Route? previousRoute) {
-    super.didPop(route, previousRoute);
-    _adapterStateSubscription?.cancel();
-    _adapterStateSubscription = null;
-  }
-}
+//     return MaterialApp(
+//       color: Colors.lightBlue,
+//       home: screen,
+//       navigatorObservers: [BluetoothAdapterStateObserver()],
+//     );
+//   }
+// }
+
+// class BluetoothAdapterStateObserver extends NavigatorObserver {
+//   StreamSubscription<BluetoothAdapterState>? _adapterStateSubscription;
+
+//   @override
+//   void didPush(Route route, Route? previousRoute) {
+//     super.didPush(route, previousRoute);
+//     if (route.settings.name == '/DeviceScreen') {
+//       _adapterStateSubscription ??=
+//           FlutterBluePlus.adapterState.listen((state) {
+//         if (state != BluetoothAdapterState.on) {
+//           navigator?.pop();
+//         }
+//       });
+//     }
+//   }
+
+//   @override
+//   void didPop(Route route, Route? previousRoute) {
+//     super.didPop(route, previousRoute);
+//     _adapterStateSubscription?.cancel();
+//     _adapterStateSubscription = null;
+//   }
+// }

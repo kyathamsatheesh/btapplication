@@ -396,42 +396,84 @@ class _ScanScreenState extends State<ScanScreen> {
     }
   }
 
+  // @override
+  // Widget build(BuildContext context) {
+  //   return Scaffold(
+  //     appBar: AppBar(title: Text("BLE IoT App")),
+  //     body: Column(
+  //       children: <Widget>[
+  //         Expanded(
+  //           child: ListView.builder(
+  //             itemCount: _scanResults.length,
+  //             itemBuilder: (context, index) {
+  //               return ScanResultTile(
+  //                 result: _scanResults[index],
+  //                 onTap: () async {
+  //                   await _scanResults[index].device.connect();
+  //                   Navigator.push(
+  //                     context,
+  //                     MaterialPageRoute(
+  //                       builder: (context) =>
+  //                           DeviceScreen(device: _scanResults[index].device),
+  //                     ),
+  //                   );
+  //                 },
+  //               );
+  //             },
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //     floatingActionButton: FloatingActionButton(
+  //       onPressed: _isScanning ? null : _startScan,
+  //       child: Icon(_isScanning ? Icons.stop : Icons.search),
+  //     ),
+  //   );
+  // }
+
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("BLE IoT App")),
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            child: ListView.builder(
-              itemCount: _scanResults.length,
-              itemBuilder: (context, index) {
-                return ScanResultTile(
-                  result: _scanResults[index],
-                  onTap: () async {
-                    await _scanResults[index].device.connect();
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            DeviceScreen(device: _scanResults[index].device),
-                      ),
+Widget build(BuildContext context) {
+  List<ScanResult> filteredResults = _scanResults.where((result) {
+    return result.device.name.startsWith("ESP32_BLE"); // Adjust filter condition
+  }).toList();
+
+  return Scaffold(
+    appBar: AppBar(title: Text("BLE IoT App")),
+    body: Column(
+      children: <Widget>[
+        filteredResults.isEmpty
+            ? Center(
+                child: Text(
+                  "No devices found",
+                  style: TextStyle(fontSize: 18.0),
+                ),
+              )
+            : Expanded(
+                child: ListView.builder(
+                  itemCount: filteredResults.length,
+                  itemBuilder: (context, index) {
+                    return ScanResultTile(
+                      result: filteredResults[index],
+                      onTap: () async {
+                        await filteredResults[index].device.connect();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => DeviceScreen(device: filteredResults[index].device),
+                          ),
+                        );
+                      },
                     );
                   },
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: _isScanning ? null : onScanPressed,
-      //   child: Icon(_isScanning ? Icons.stop : Icons.search),
-      // ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _isScanning ? null : _startScan,
-        child: Icon(_isScanning ? Icons.stop : Icons.search),
-      ),
-    );
-  }
+                ),
+              ),
+      ],
+    ),
+    floatingActionButton: FloatingActionButton(
+      onPressed: _isScanning ? null : _startScan,
+      child: Icon(_isScanning ? Icons.stop : Icons.search),
+    ),
+  );
+}
+
 }

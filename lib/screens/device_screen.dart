@@ -796,7 +796,28 @@ Widget build(BuildContext context) {
                 },
                 child: Text('Stop'),
               ),
+              
             ],
+          ),
+          SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                shadowColor: Colors.greenAccent,
+                elevation: 3,
+                shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(32.0)),
+                minimumSize: Size(300, 50), //////// HERE
+            ),
+                onPressed: () {
+                  readData();
+                },
+                child: Text('Read'),
+              ),
+
+            ]
           ),
           // SizedBox(height: 20),
           // Text('Received Data: $receivedData'),
