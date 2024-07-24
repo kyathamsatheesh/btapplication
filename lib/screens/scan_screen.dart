@@ -257,6 +257,8 @@
 //   }
 // }
 
+//------------------
+
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
@@ -274,7 +276,7 @@ class ScanScreen extends StatefulWidget {
   State<ScanScreen> createState() => _ScanScreenState();
 }
 
-class _ScanScreenState extends State<ScanScreen> {
+class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver{
   List<BluetoothDevice> _systemDevices = [];
   List<ScanResult> _scanResults = [];
   bool _isScanning = false;
@@ -284,6 +286,7 @@ class _ScanScreenState extends State<ScanScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance!.addObserver(this);
 
     int counter=0; 
     int counterForMain=0; 
@@ -338,6 +341,7 @@ class _ScanScreenState extends State<ScanScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance!.removeObserver(this);
     _scanResultsSubscription.cancel();
     _isScanningSubscription.cancel();
     super.dispose();
@@ -393,6 +397,29 @@ class _ScanScreenState extends State<ScanScreen> {
       Snackbar.show(ABC.b, prettyException("Start Scan Error:", e),
           success: false);
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("System Devices Error:$e"),backgroundColor: Colors.red,));
+    }
+  }
+
+   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      print("***404**** resumed:- $state");
+      Snackbar.show(ABC.b, prettyException("Start Scan Error:resume","$state"),
+          success: false);
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("System Devices Error resumed:"),backgroundColor: Colors.red,));
+    } else if (state == AppLifecycleState.paused) {
+      Snackbar.show(ABC.b, prettyException("Start Scan Error:paused","$state"),
+          success: false);
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("System Devices Error paused:"),backgroundColor: Colors.red,));
+      // Disconnect from BLE device here
+      print("***407**** paused:- $state");
+    }
+    else if (state == AppLifecycleState.detached) {
+      // Disconnect from BLE device here
+      print("***407**** detached:- $state");
+      Snackbar.show(ABC.b, prettyException("Start Scan Error:","$state"),
+          success: false);
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("System Devices Error detached:"),backgroundColor: Colors.red,));
     }
   }
 

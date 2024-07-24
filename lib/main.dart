@@ -78,17 +78,52 @@
 // }
 
 
+// import 'package:flutter/material.dart';
+// import 'MainScreen.dart';
+
+// void main() {
+//   runApp(MaterialApp(
+//     title: 'Device App',
+//     theme: ThemeData(
+//       primarySwatch: Colors.blue,
+//     ),
+//     home: MainScreen(),
+//   ));
+// }
+
+// import 'package:flutter/material.dart';
+// import 'MainScreen.dart';
+
+// void main() {
+//   runApp(MaterialApp(
+//     title: 'Device App',
+//     theme: ThemeData(
+//       primarySwatch: Colors.blue,
+//     ),
+//     home: MainScreen(),
+//   ));
+// }
+
+
+import 'package:btapplication/statemanagment/bluetooth_data_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'MainScreen.dart';
 
 void main() {
-  runApp(MaterialApp(
-    title: 'Device App',
-    theme: ThemeData(
-      primarySwatch: Colors.blue,
-    ),
-    home: MainScreen(),
-  ));
+  runApp(ChangeNotifierProvider(create: (context) => BluetoothDataProvider(),
+  child: MyApp(),
+  ),
+  );
+}
+
+class MyApp extends StatelessWidget{
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp( home: MainScreen(),);
+    
+  }
 }
 
 
