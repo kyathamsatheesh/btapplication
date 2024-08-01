@@ -358,8 +358,9 @@ import 'package:vibration/vibration.dart';
 
 class DeviceScreen extends StatefulWidget {
   final BluetoothDevice device;
-
-  DeviceScreen({required this.device});
+  final BluetoothDevice? device1;
+  final double? angleFromUserScreen;
+  DeviceScreen({required this.device, this.device1, this.angleFromUserScreen});
 
   @override
   _DeviceScreenState createState() => _DeviceScreenState();
@@ -377,6 +378,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
   String angleText = "Angle";
   String heartText = "Heart Rate";
 
+  int _selectedIndex = 0; // Track the selected index
 
   @override
   void initState() {
@@ -390,6 +392,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
       discoverServices();
       // Update connected device in provider
       Provider.of<BluetoothDataProvider>(context, listen: false).setConnectedDevice(widget.device);
+      Provider.of<BluetoothDataProvider>(context, listen: false).setConnectedtESTDevice(widget.device);
     } catch (e) {
       Snackbar.show(ABC.a, prettyException("Connection Error:", e), success: false);
     }
@@ -421,6 +424,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
                 int size = tbarData.length;
                 if (size > 0) {
                   receivedAngle = tbarData[0];
+                  print('427******'+tbarData[0]);
                   receivedHeartRate = tbarData.length > 1 ? tbarData[1] : "No Heart Rate data";
                   finalHeartRate = tbarData.length > 1 ? int.parse(tbarData[1]) : 0;
                 }
@@ -502,10 +506,11 @@ class _DeviceScreenState extends State<DeviceScreen> {
   @override
 Widget build(BuildContext context) {
 
-    final bluetoothDataProvider = Provider.of<BluetoothDataProvider>(context);
+    //final bluetoothDataProvider = Provider.of<BluetoothDataProvider>(context);
 
   // Determine the color based on the heart rate value
     Color heartRateColor;
+    String inputangle='20';
     if (finalHeartRate < 80) {
       heartRateColor = Colors.green; // Low heart rate
     } else if (finalHeartRate <= 140) {
@@ -520,9 +525,19 @@ Widget build(BuildContext context) {
     }
     if(finalHeartRate>=100)
     {
-      print("521*******");
+      
       _callVibration();
     }
+    if(widget.angleFromUserScreen!=0.00)
+    {
+      print("530*******");
+      inputangle=widget.angleFromUserScreen.toString();
+    }
+    else{
+      inputangle='20';
+      print("534*******");  
+    }
+    
 
   return Scaffold(
     appBar: AppBar(
@@ -682,6 +697,7 @@ Widget build(BuildContext context) {
                           Text('Low (0-80)'),
                         ],
                       ),
+                      SizedBox(width: 10),
                       Row(
                         children: [
                           Container(width: 16, height: 16, color: Colors.orange),
@@ -689,6 +705,7 @@ Widget build(BuildContext context) {
                           Text('Medium (80-140)'),
                         ],
                       ),
+                      SizedBox(width: 10),
                       Row(
                         children: [
                           Container(width: 16, height: 16, color: Colors.red),
@@ -729,9 +746,12 @@ Widget build(BuildContext context) {
                           ),
                           onPressed: () {
                             // Start action
+                            // sendData('c'+inputangle);
+                            print('749************'+inputangle);
+                            //sendData('c$inputangle');
                             sendData('c20');
                           },
-                          child: Text('Start'),
+                          child: Text('Startaa'),
                         ),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
@@ -774,6 +794,34 @@ Widget build(BuildContext context) {
           ),
         ),
       ),
+      // bottomNavigationBar: BottomNavigationBar(
+      //   currentIndex: _selectedIndex,
+      //   onTap: (index) {
+      //     setState(() {
+      //       _selectedIndex = index;
+      //     });
+      //     // Handle navigation based on the selected index
+      //     // Example: Navigator.pushNamed(context, '/newScreen');
+      //   },
+      //   items: const <BottomNavigationBarItem>[
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.home),
+      //       label: 'Home',
+      //     ),
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.search),
+      //       label: 'Search',
+      //     ),
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.notifications),
+      //       label: 'Notifications',
+      //     ),
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.account_circle),
+      //       label: 'Profile',
+      //     ),
+      //   ],
+      // ),
   );
 }
 

@@ -1,3 +1,5 @@
+import 'package:btapplication/commonscreen/homescreen.dart';
+import 'package:btapplication/screens/device_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -128,13 +130,14 @@ class _UserCreationScreenState extends State<UserCreationScreen> {
   }
 
   BluetoothCharacteristic? targetCharacteristic;
-
+  BluetoothDevice _connectedDevice = BluetoothDevice(remoteId: DeviceIdentifier("DAD"));
   @override
   Widget build(BuildContext context) {
     final bluetoothDataProvider = Provider.of<BluetoothDataProvider>(context);
     String receivedAngle = bluetoothDataProvider.receivedAngle;
     targetCharacteristic = bluetoothDataProvider.targetCharacteristic;
-
+    _connectedDevice = bluetoothDataProvider.testDevice;
+    
     String startBtn = 'Start to read the data';
     String angleLbl = 'Angle';
     String hintTxtAngle = 'Enter Angle';
@@ -332,99 +335,220 @@ class _UserCreationScreenState extends State<UserCreationScreen> {
                         child: Text(saveBtn),
                       ),
                       SizedBox(height: 16.0),
-                      Expanded(
-                        child: ListView.builder(
-                          itemCount: _items.length,
-                          itemBuilder: (context, index) {
-                            // Declare TextEditingController instances for each field
-                            TextEditingController nameController = TextEditingController();
-                            TextEditingController weightController = TextEditingController();
-                            TextEditingController angleController = TextEditingController();
-                            nameController.text = _items[index]['name'];
-                            weightController.text = _items[index]['weight'].toString();
-                            angleController.text = _items[index]['angle'].toString();
-                            // angleController.text =  _angleController.text;
-                            return ListTile(
-                              title: Text(_items[index]['name']),
-                              subtitle:
-                                  Text('Weight: ${_items[index]['weight']}, Angle: ${_items[index]['angle']}'),
-                              trailing: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  IconButton(
-                                    icon: Icon(Icons.edit),
-                                    onPressed: () {
-                                      
-                                      showDialog(
-                                            context: context,
-                                            builder: (context) => AlertDialog(
-                                              title: Text(updateUserLbl),
-                                              content: Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  TextFormField(
-                                                    controller: nameController,
-                                                    decoration: InputDecoration(
-                                                      labelText: nameLbl,
-                                                      hintText: hintTxtName,
-                                                    ),
-                                                  ),
-                                                  SizedBox(height: 16.0),
-                                                  TextFormField(
-                                                    keyboardType: TextInputType.numberWithOptions(decimal: true),
-                                                    decoration: InputDecoration(
-                                                      labelText: weightLbl,
-                                                      hintText: hintTxtweight,
-                                                    ),
-                                                    controller: weightController,
-                                                  ),
-                                                  SizedBox(height: 16.0),
-                                                  TextFormField(
-                                                    keyboardType: TextInputType.numberWithOptions(decimal: true),
-                                                    decoration: InputDecoration(
-                                                      labelText: angleLbl,
-                                                      hintText: hintTxtAngle,
-                                                    ),
-                                                    controller: angleController,
-                                                  ),
-                                                ],
-                                              ),
-                                              actions: [
-                                                TextButton(
-                                                  onPressed: () {
-                                                    Navigator.pop(context);
-                                                  },
-                                                  child: Text(cancelBtn),
-                                                ),
-                                                ElevatedButton(
-                                                  onPressed: () {
-                                                    _updateUser(
-                                                      _items[index]['id'],
-                                                      nameController.text,
-                                                      double.tryParse(weightController.text) ?? 0.0,
-                                                      double.tryParse(angleController.text) ?? 0.0,
-                                                    );
-                                                    Navigator.pop(context);
-                                                  },
-                                                  child: Text(updateBtn),
-                                                ),
-                                              ],
-                                            ),
-                                          );
+                      // Expanded(
+                      //   child: ListView.builder(
+                      //     itemCount: _items.length,
+                      //     itemBuilder: (context, index) {
+                      //       // Declare TextEditingController instances for each field
+                      //       TextEditingController nameController = TextEditingController();
+                      //       TextEditingController weightController = TextEditingController();
+                      //       TextEditingController angleController = TextEditingController();
+                      //       nameController.text = _items[index]['name'];
+                      //       weightController.text = _items[index]['weight'].toString();
+                      //       angleController.text = _items[index]['angle'].toString();
+                      //       double storedAngle = _items[index]['angle'];
+                      //       // angleController.text =  _angleController.text;
+                      //       return ListTile(
+                      //         title: Text(_items[index]['name']),
+                      //         subtitle:
+                      //             Text('Weight: ${_items[index]['weight']}, Angle: ${_items[index]['angle']}'),
+                      //         trailing: Row(
+                      //           mainAxisSize: MainAxisSize.min,
+                      //           children: [
+                      //             IconButton(
+                      //               icon: Icon(Icons.edit),
+                      //               onPressed: () {
+                      //                 // Get the latest receivedAngle from the Provider
+                      //                    String dialogAngle = Provider.of<BluetoothDataProvider>(context, listen: true).receivedAngle;
+                      //                   //  String dialogAngle = Provider.of<BluetoothDataProvider>(context).receivedAngle;
+                      //                 print("sdfajfgdvasfgdsfhsgdfsdahfkjsdfhkjsdhfkjsdhf$dialogAngle");
+                      //                 showDialog(
+                      //                       context: context,
+                      //                       builder: (context) => AlertDialog(
+                      //                         // title: Text(updateUserLbl),
+                      //                         title: Text(receivedAngle),
+                      //                         content: Column(
+                      //                           mainAxisSize: MainAxisSize.min,
+                      //                           children: [
+                      //                             TextFormField(
+                      //                               controller: nameController,
+                      //                               decoration: InputDecoration(
+                      //                                 labelText: nameLbl,
+                      //                                 hintText: hintTxtName,
+                      //                               ),
+                      //                             ),
+                      //                             SizedBox(height: 16.0),
+                      //                             TextFormField(
+                      //                               keyboardType: TextInputType.numberWithOptions(decimal: true),
+                      //                               decoration: InputDecoration(
+                      //                                 labelText: weightLbl,
+                      //                                 hintText: hintTxtweight,
+                      //                               ),
+                      //                               controller: weightController,
+                      //                             ),
+                      //                             SizedBox(height: 16.0),
+                      //                             TextFormField(
+                      //                               keyboardType: TextInputType.numberWithOptions(decimal: true),
+                      //                               decoration: InputDecoration(
+                      //                                 labelText: angleLbl,
+                      //                                 hintText: hintTxtAngle,
+                      //                               ),
+                      //                               controller: angleController,
+                      //                             ),
+                      //                           ],
+                      //                         ),
+                      //                         actions: [
+                      //                           TextButton(
+                      //                             onPressed: () {
+                      //                               Navigator.pop(context);
+                      //                             },
+                      //                             child: Text(cancelBtn),
+                      //                           ),
+                      //                           ElevatedButton(
+                      //                             onPressed: () {
+                      //                               _updateUser(
+                      //                                 _items[index]['id'],
+                      //                                 nameController.text,
+                      //                                 double.tryParse(weightController.text) ?? 0.0,
+                      //                                 double.tryParse(angleController.text) ?? 0.0,
+                      //                               );
+                      //                               Navigator.pop(context);
+                      //                             },
+                      //                             child: Text(updateBtn),
+                      //                           ),
+                      //                         ],
+                      //                       ),
+                      //                     );
 
-                                    },
-                                  ),
-                                  IconButton(
-                                    icon: Icon(Icons.delete),
-                                    onPressed: () =>
-                                        _deleteItem(_items[index]['id']),
-                                  ),
-                                ],
+                      //               },
+                      //             ),
+                      //             IconButton(
+                      //               icon: Icon(Icons.delete),
+                      //               onPressed: () =>
+                      //                   _deleteItem(_items[index]['id']),
+                      //             ),
+                      //             IconButton(
+                      //               icon: Icon(Icons.forward),
+                      //               onPressed: () =>
+                      //                   Navigator.push(context,MaterialPageRoute(builder: (context) =>  DeviceScreen(device: _connectedDevice,angleFromUserScreen: storedAngle),),)
+                      //             ),
+                      //           ],
+                      //         ),
+                      //       );
+                      //     },
+                      //   ),
+                      // ),
+                      Expanded(
+  child: ListView.builder(
+    itemCount: _items.length,
+    itemBuilder: (context, index) {
+      TextEditingController nameController = TextEditingController();
+      TextEditingController weightController = TextEditingController();
+      TextEditingController angleController = TextEditingController();
+
+      nameController.text = _items[index]['name'];
+      weightController.text = _items[index]['weight'].toString();
+      angleController.text = _items[index]['angle'].toString();
+      double storedAngle = _items[index]['angle'];
+
+      return ListTile(
+        title: Text(_items[index]['name']),
+        subtitle: Text('Weight: ${_items[index]['weight']}, Angle: ${_items[index]['angle']}'),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              icon: Icon(Icons.edit),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return Consumer<BluetoothDataProvider>(
+                      builder: (context, bluetoothDataProvider, child) {
+                        String dialogAngle = bluetoothDataProvider.receivedAngle;
+                        angleController.text = dialogAngle;
+                        return AlertDialog(
+                          title: Text(updateUserLbl),
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              TextFormField(
+                                controller: nameController,
+                                decoration: InputDecoration(
+                                  labelText: nameLbl,
+                                  hintText: hintTxtName,
+                                ),
                               ),
-                            );
-                          },
-                        ),
-                      ),
+                              SizedBox(height: 16.0),
+                              TextFormField(
+                                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                                decoration: InputDecoration(
+                                  labelText: weightLbl,
+                                  hintText: hintTxtweight,
+                                ),
+                                controller: weightController,
+                              ),
+                              SizedBox(height: 16.0),
+                              TextFormField(
+                                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                                decoration: InputDecoration(
+                                  labelText: angleLbl,
+                                  hintText: hintTxtAngle,
+                                ),
+                                controller: angleController,
+                              ),
+                            ],
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: Text(cancelBtn),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                _updateUser(
+                                  _items[index]['id'],
+                                  nameController.text,
+                                  double.tryParse(weightController.text) ?? 0.0,
+                                  double.tryParse(angleController.text) ?? 0.0,
+                                );
+                                Navigator.pop(context);
+                              },
+                              child: Text(updateBtn),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                );
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.delete),
+              onPressed: () => _deleteItem(_items[index]['id']),
+            ),
+            IconButton(
+              icon: Icon(Icons.forward),
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => DeviceScreen(
+                    device: _connectedDevice,
+                    angleFromUserScreen: storedAngle,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    },
+  ),
+)
+
                     ],
                   ),
                 ),

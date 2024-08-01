@@ -3,6 +3,7 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 class BluetoothDataProvider extends ChangeNotifier {
   BluetoothDevice? _connectedDevice;
+  BluetoothDevice _testDevice = BluetoothDevice(remoteId: DeviceIdentifier("sadas"));
   String _receivedData = "No data received";
   String _receivedAngle = "0";
   String _receivedHeartRate = "No data received";
@@ -10,6 +11,7 @@ class BluetoothDataProvider extends ChangeNotifier {
   BluetoothCharacteristic? _targetCharacteristic;
 
   BluetoothDevice? get connectedDevice => _connectedDevice;
+  BluetoothDevice get testDevice => _testDevice;
   String get receivedData => _receivedData;
   String get receivedAngle => _receivedAngle;
   String get receivedHeartRate => _receivedHeartRate;
@@ -18,6 +20,11 @@ class BluetoothDataProvider extends ChangeNotifier {
 
   void setConnectedDevice(BluetoothDevice device) {
     _connectedDevice = device;
+    notifyListeners();
+  }
+
+  void setConnectedtESTDevice(BluetoothDevice device) {
+    _testDevice = device;
     notifyListeners();
   }
 

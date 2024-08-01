@@ -498,7 +498,7 @@ Widget build(BuildContext context) {
     ),
     floatingActionButton: FloatingActionButton(
       onPressed: _isScanning ? null : _startScan,
-      child: Icon(_isScanning ? Icons.stop : Icons.search),
+      child: Icon(_isScanning ? Icons.stop : Icons.bluetooth_searching_rounded),
     ),
   );
 }
