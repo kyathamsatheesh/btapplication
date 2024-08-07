@@ -1,4 +1,4 @@
-import 'package:btapplication/commonscreen/homescreen.dart';
+//import 'package:btapplication/commonscreen/homescreen.dart';
 import 'package:btapplication/screens/device_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,6 +9,7 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:btapplication/db.sqlite/database_helper.dart';
 import 'package:btapplication/statemanagment/bluetooth_data_provider.dart';
 import 'package:btapplication/utils/snackbar.dart';
+import 'package:confirm_dialog/confirm_dialog.dart';
 
 void main() {
   runApp(UserCreationApp());
@@ -68,6 +69,7 @@ class _UserCreationScreenState extends State<UserCreationScreen> {
       _items = items;
     });
     print(" Total $_items");
+    Provider.of<BluetoothDataProvider>(context, listen: false).refreshMaxAngle();
   }
 
   void _saveUser() async {
@@ -82,6 +84,7 @@ class _UserCreationScreenState extends State<UserCreationScreen> {
       _loadItems();
       _resetFields();
     }
+    Provider.of<BluetoothDataProvider>(context, listen: false).refreshMaxAngle();
   }
 
   void _deleteItem(int id) async {
@@ -97,6 +100,7 @@ class _UserCreationScreenState extends State<UserCreationScreen> {
       'angle': newAngle,
     });
     _loadItems();
+    Provider.of<BluetoothDataProvider>(context, listen: false).refreshMaxAngle();
   }
 
   void _resetFields() {
@@ -112,7 +116,7 @@ class _UserCreationScreenState extends State<UserCreationScreen> {
   }
 
   void sendData(String data) {
-    Snackbar.show(ABC.a, data, success: true);
+    //Snackbar.show(ABC.a, data, success: true);
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text("Sending data: $data"),
       backgroundColor: Colors.blue,
@@ -122,7 +126,7 @@ class _UserCreationScreenState extends State<UserCreationScreen> {
     } else {
       print("Target characteristic is not set.");
       Snackbar.show(ABC.a, "Target characteristic is not set.", success: false);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text("Target characteristic is not set."),
         backgroundColor: Colors.blue,
       ));
@@ -130,7 +134,7 @@ class _UserCreationScreenState extends State<UserCreationScreen> {
   }
 
   BluetoothCharacteristic? targetCharacteristic;
-  BluetoothDevice _connectedDevice = BluetoothDevice(remoteId: DeviceIdentifier("DAD"));
+  BluetoothDevice _connectedDevice = BluetoothDevice(remoteId: DeviceIdentifier("TestID"));
   @override
   Widget build(BuildContext context) {
     final bluetoothDataProvider = Provider.of<BluetoothDataProvider>(context);
@@ -149,11 +153,18 @@ class _UserCreationScreenState extends State<UserCreationScreen> {
     String updateBtn = 'Update';
     String cancelBtn = 'Cancel';
     String updateUserLbl = 'Update User Screen';
-    _angleController.text = bluetoothDataProvider.receivedAngle.toString();
-
+    //_angleController.text = bluetoothDataProvider.receivedAngle.toString();
+    double maxAngle = bluetoothDataProvider.maxAngle;
+    _angleController.text = maxAngle.toString();
+    
+    if(receivedAngle.contains('c')) 
+    {
+      receivedAngle = receivedAngle.replaceAll("c", "");
+    } 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create User $receivedAngle'),
+        // title: Text('Create User $receivedAngle'),
+         title: Text('Create User (Max: ${maxAngle.toStringAsFixed(2)})'),
       ),
       body: SingleChildScrollView(
         child: Center(
@@ -172,15 +183,15 @@ class _UserCreationScreenState extends State<UserCreationScreen> {
                       labelOffset: 5,
                       startAngle: 180,
                       endAngle: 0,
-                      axisLineStyle: AxisLineStyle(
+                      axisLineStyle: const AxisLineStyle(
                         thicknessUnit: GaugeSizeUnit.factor,
                         thickness: 0.03,
                       ),
-                      majorTickStyle: MajorTickStyle(
+                      majorTickStyle: const MajorTickStyle(
                           length: 6, thickness: 4, color: Colors.blue),
-                      minorTickStyle: MinorTickStyle(
+                      minorTickStyle: const MinorTickStyle(
                           length: 3, thickness: 3, color: Colors.green),
-                      axisLabelStyle: GaugeTextStyle(
+                      axisLabelStyle: const GaugeTextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
                           fontSize: 14),
@@ -193,7 +204,7 @@ class _UserCreationScreenState extends State<UserCreationScreen> {
                           needleStartWidth: 1.5,
                           needleEndWidth: 6,
                           needleColor: Colors.red,
-                          knobStyle: KnobStyle(knobRadius: 0.09),
+                          knobStyle: const KnobStyle(knobRadius: 0.09),
                         ),
                       ],
                       annotations: <GaugeAnnotation>[
@@ -201,9 +212,9 @@ class _UserCreationScreenState extends State<UserCreationScreen> {
                           widget: Container(
                             child: Column(
                               children: <Widget>[
-                                SizedBox(height: 90),
+                                const SizedBox(height: 90),
                                 Text('$receivedAngle\u00B0',
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         fontSize: 40,
                                         fontWeight: FontWeight.bold)),
                               ],
@@ -220,13 +231,13 @@ class _UserCreationScreenState extends State<UserCreationScreen> {
                           sizeUnit: GaugeSizeUnit.factor,
                           startWidth: 0.03,
                           endWidth: 0.03,
-                          gradient: SweepGradient(
-                            colors: const <Color>[
+                          gradient: const SweepGradient(
+                            colors: <Color>[
                               Colors.green,
                               Colors.yellow,
                               Colors.red
                             ],
-                            stops: const <double>[0.0, 0.5, 1],
+                            stops: <double>[0.0, 0.5, 1],
                           ),
                         ),
                       ],
@@ -234,7 +245,7 @@ class _UserCreationScreenState extends State<UserCreationScreen> {
                   ],
                   title: GaugeTitle(
                     text: angleLbl,
-                    textStyle: TextStyle(
+                    textStyle: const TextStyle(
                       fontSize: 30.0,
                       fontWeight: FontWeight.bold,
                       color: Colors.blue,
@@ -245,12 +256,12 @@ class _UserCreationScreenState extends State<UserCreationScreen> {
               SizedBox(
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    shadowColor: Colors.greenAccent,
-                    elevation: 3,
+                    shadowColor: Colors.blue,
+                    elevation: 8,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(32.0),
                     ),
-                    minimumSize: Size(300, 50),
+                    minimumSize: const Size(300, 50),
                   ),
                   onPressed: () {
                     sendData('c');
@@ -259,6 +270,7 @@ class _UserCreationScreenState extends State<UserCreationScreen> {
                 ),
               ),
               SizedBox(
+                width: MediaQuery.of(context).size.width-50,
                 height: MediaQuery.of(context).size.height,
                 child: Form(
                   key: _formKey,
@@ -283,10 +295,10 @@ class _UserCreationScreenState extends State<UserCreationScreen> {
                           });
                         },
                       ),
-                      SizedBox(height: 16.0),
+                      const SizedBox(height: 16.0),
                       TextFormField(
                          controller: _weightController, // Assign TextEditingController
-                        keyboardType: TextInputType.numberWithOptions(decimal: true),
+                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
                         inputFormatters: [
                           FilteringTextInputFormatter.allow(
                               RegExp(r'^\d+\.?\d{0,2}$')),
@@ -308,10 +320,10 @@ class _UserCreationScreenState extends State<UserCreationScreen> {
                         },
                         //controller: TextEditingController(text: userWeight.toString()),
                       ),
-                      SizedBox(height: 16.0),
+                      const SizedBox(height: 16.0),
                       TextFormField(
                         controller: _angleController, // Assign TextEditingController
-                        keyboardType: TextInputType.numberWithOptions(decimal: true),
+                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
                          validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter a angle';
@@ -329,12 +341,20 @@ class _UserCreationScreenState extends State<UserCreationScreen> {
                         },
                         //controller: TextEditingController(text: receivedAngle.toString()),
                       ),
-                      SizedBox(height: 16.0),
+                      const SizedBox(height: 16.0),
                       ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                        shadowColor: Colors.blue,
+                        elevation: 8,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(32.0),
+                        ),
+                        minimumSize: const Size(300, 50),
+                      ),
                         onPressed: _saveUser,
                         child: Text(saveBtn),
                       ),
-                      SizedBox(height: 16.0),
+                      const SizedBox(height: 16.0),
                       // Expanded(
                       //   child: ListView.builder(
                       //     itemCount: _items.length,
@@ -439,115 +459,143 @@ class _UserCreationScreenState extends State<UserCreationScreen> {
                       //   ),
                       // ),
                       Expanded(
-  child: ListView.builder(
-    itemCount: _items.length,
-    itemBuilder: (context, index) {
-      TextEditingController nameController = TextEditingController();
-      TextEditingController weightController = TextEditingController();
-      TextEditingController angleController = TextEditingController();
+                        child: ListView.builder(
+                          itemCount: _items.length,
+                          itemBuilder: (context, index) {
+                            TextEditingController nameController = TextEditingController();
+                            TextEditingController weightController = TextEditingController();
+                            TextEditingController angleController = TextEditingController();
 
-      nameController.text = _items[index]['name'];
-      weightController.text = _items[index]['weight'].toString();
-      angleController.text = _items[index]['angle'].toString();
-      double storedAngle = _items[index]['angle'];
+                            nameController.text = _items[index]['name'];
+                            weightController.text = _items[index]['weight'].toString();
+                            angleController.text = _items[index]['angle'].toString();
+                            double storedAngle = _items[index]['angle'];
 
-      return ListTile(
-        title: Text(_items[index]['name']),
-        subtitle: Text('Weight: ${_items[index]['weight']}, Angle: ${_items[index]['angle']}'),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(
-              icon: Icon(Icons.edit),
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return Consumer<BluetoothDataProvider>(
-                      builder: (context, bluetoothDataProvider, child) {
-                        String dialogAngle = bluetoothDataProvider.receivedAngle;
-                        angleController.text = dialogAngle;
-                        return AlertDialog(
-                          title: Text(updateUserLbl),
-                          content: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              TextFormField(
-                                controller: nameController,
-                                decoration: InputDecoration(
-                                  labelText: nameLbl,
-                                  hintText: hintTxtName,
-                                ),
+                            return ListTile(
+                              title: Text(_items[index]['name']),
+                              subtitle: Text('Weight: ${_items[index]['weight']}, Angle: ${_items[index]['angle']}'),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(Icons.edit),
+                                    onPressed: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return Consumer<BluetoothDataProvider>(
+                                            builder: (context, bluetoothDataProvider, child) {
+                                             // String dialogAngle = bluetoothDataProvider.receivedAngle;
+                                              double maxAngle = bluetoothDataProvider.maxAngle;
+                                              //_angleController.text = maxAngle.toString();
+                                              angleController.text = maxAngle.toString();
+                                              return AlertDialog(
+                                                title: Text(updateUserLbl),
+                                                content: Column(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  children: [
+                                                    TextFormField(
+                                                      controller: nameController,
+                                                      decoration: InputDecoration(
+                                                        labelText: nameLbl,
+                                                        hintText: hintTxtName,
+                                                      ),
+                                                    ),
+                                                    const SizedBox(height: 16.0),
+                                                    TextFormField(
+                                                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                                      decoration: InputDecoration(
+                                                        labelText: weightLbl,
+                                                        hintText: hintTxtweight,
+                                                      ),
+                                                      controller: weightController,
+                                                    ),
+                                                    const SizedBox(height: 16.0),
+                                                    TextFormField(
+                                                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                                      decoration: InputDecoration(
+                                                        labelText: angleLbl,
+                                                        hintText: hintTxtAngle,
+                                                      ),
+                                                      controller: angleController,
+                                                    ),
+                                                  ],
+                                                ),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed: () {
+                                                      Navigator.pop(context);
+                                                    },
+                                                    child: Text(cancelBtn),
+                                                  ),
+                                                  ElevatedButton(
+                                                    // onPressed: () {
+                                                    //   _updateUser(
+                                                    //     _items[index]['id'],
+                                                    //     nameController.text,
+                                                    //     double.tryParse(weightController.text) ?? 0.0,
+                                                    //     double.tryParse(angleController.text) ?? 0.0,
+                                                    //   );
+                                                    //   Navigator.pop(context);
+                                                    // },
+                                                    onPressed: () async {
+                                                          if (await confirm(
+                                                            context,
+                                                            title: const Text('Confirm'),
+                                                            content: const Text('Would you like to update angle value?'),
+                                                            textOK: const Text('Yes'),
+                                                            textCancel: const Text('No'),
+                                                          )) {
+                                                          _updateUser(_items[index]['id'],nameController.text,double.tryParse(weightController.text) ?? 0.0,
+                                                          double.tryParse(angleController.text) ?? 0.0,);
+                                                          Navigator.pop(context);
+                                                          return print('Yes');
+                                                          }
+                                                          return print('No');
+                                                        },
+                                                    child: Text(updateBtn),
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          );
+                                        },
+                                      );
+                                    },
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.delete),
+                                    onPressed:() async {
+                                        if (await confirm(
+                                          context,
+                                          title: const Text('Confirm'),
+                                          content: const Text('Would you like to remove?'),
+                                          textOK: const Text('Yes'),
+                                          textCancel: const Text('No'),
+                                        )) {
+                                         _deleteItem(_items[index]['id']);
+                                        }
+                                        return print('pressedCancel');
+                                      },
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.forward),
+                                    onPressed: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => DeviceScreen(
+                                          device: _connectedDevice,
+                                          angleFromUserScreen: storedAngle,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              SizedBox(height: 16.0),
-                              TextFormField(
-                                keyboardType: TextInputType.numberWithOptions(decimal: true),
-                                decoration: InputDecoration(
-                                  labelText: weightLbl,
-                                  hintText: hintTxtweight,
-                                ),
-                                controller: weightController,
-                              ),
-                              SizedBox(height: 16.0),
-                              TextFormField(
-                                keyboardType: TextInputType.numberWithOptions(decimal: true),
-                                decoration: InputDecoration(
-                                  labelText: angleLbl,
-                                  hintText: hintTxtAngle,
-                                ),
-                                controller: angleController,
-                              ),
-                            ],
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              child: Text(cancelBtn),
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
-                                _updateUser(
-                                  _items[index]['id'],
-                                  nameController.text,
-                                  double.tryParse(weightController.text) ?? 0.0,
-                                  double.tryParse(angleController.text) ?? 0.0,
-                                );
-                                Navigator.pop(context);
-                              },
-                              child: Text(updateBtn),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  },
-                );
-              },
-            ),
-            IconButton(
-              icon: Icon(Icons.delete),
-              onPressed: () => _deleteItem(_items[index]['id']),
-            ),
-            IconButton(
-              icon: Icon(Icons.forward),
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => DeviceScreen(
-                    device: _connectedDevice,
-                    angleFromUserScreen: storedAngle,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
-    },
-  ),
-)
+                            );
+                          },
+                        ),
+                      )
 
                     ],
                   ),

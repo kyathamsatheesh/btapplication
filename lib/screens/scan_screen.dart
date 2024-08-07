@@ -264,10 +264,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'device_screen.dart';
 import '../utils/snackbar.dart';
-import '../widgets/system_device_tile.dart';
 import '../widgets/scan_result_tile.dart';
-import '../utils/extra.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 class ScanScreen extends StatefulWidget {
   const ScanScreen({Key? key}) : super(key: key);
@@ -307,7 +304,7 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver{
             if(counter==1)
             {
               print("device Name:-$result.device.name");
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("We are found with ESP32_BLE Device name"),backgroundColor: Colors.blueGrey,));
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("We are found with ESP32_BLE Device name"),backgroundColor: Colors.blueGrey,));
                _connectToDevice(result.device);
                break;
             }
@@ -380,7 +377,7 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver{
 
   Future onScanPressed() async {
     Snackbar.show(ABC.b, prettyException("Start Scan Error:", "Errorrr"), success: false);
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Scanning Started...'),backgroundColor: Colors.blue,));
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Scanning Started...'),backgroundColor: Colors.blue,));
     try {
       _systemDevices = await FlutterBluePlus.systemDevices;
       print("_systemDevices :------$_systemDevices");
@@ -406,11 +403,11 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver{
       print("***404**** resumed:- $state");
       Snackbar.show(ABC.b, prettyException("Start Scan Error:resume","$state"),
           success: false);
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("System Devices Error resumed:"),backgroundColor: Colors.red,));
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("System Devices Error resumed:"),backgroundColor: Colors.red,));
     } else if (state == AppLifecycleState.paused) {
       Snackbar.show(ABC.b, prettyException("Start Scan Error:paused","$state"),
           success: false);
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("System Devices Error paused:"),backgroundColor: Colors.red,));
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("System Devices Error paused:"),backgroundColor: Colors.red,));
       // Disconnect from BLE device here
       print("***407**** paused:- $state");
     }
@@ -419,7 +416,7 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver{
       print("***407**** detached:- $state");
       Snackbar.show(ABC.b, prettyException("Start Scan Error:","$state"),
           success: false);
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("System Devices Error detached:"),backgroundColor: Colors.red,));
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("System Devices Error detached:"),backgroundColor: Colors.red,));
     }
   }
 
@@ -469,7 +466,7 @@ Widget build(BuildContext context) {
     body: Column(
       children: <Widget>[
         filteredResults.isEmpty
-            ? Center(
+            ? const Center(
                 child: Text(
                   "No devices found",
                   style: TextStyle(fontSize: 18.0),

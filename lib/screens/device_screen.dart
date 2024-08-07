@@ -349,7 +349,6 @@
 
 import 'package:btapplication/statemanagment/bluetooth_data_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
@@ -424,13 +423,11 @@ class _DeviceScreenState extends State<DeviceScreen> {
                 int size = tbarData.length;
                 if (size > 0) {
                   receivedAngle = tbarData[0];
-                  print('427******'+tbarData[0]);
                   receivedHeartRate = tbarData.length > 1 ? tbarData[1] : "No Heart Rate data";
                   finalHeartRate = tbarData.length > 1 ? int.parse(tbarData[1]) : 0;
                 }
               }
             });
-            print("Received value: $receivedData");
             Snackbar.show(ABC.a, "Received value: $receivedData", success: true);
             Provider.of<BluetoothDataProvider>(context, listen: false).updateData(receivedData);
             Provider.of<BluetoothDataProvider>(context, listen: false).setCharacteristicDevice(targetCharacteristic!);
@@ -444,7 +441,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
   }
 
   Future<void> readData() async {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Reading data...')));
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Reading data...')));
     try {
       var value = await targetCharacteristic?.read();
       setState(() {
@@ -462,7 +459,6 @@ class _DeviceScreenState extends State<DeviceScreen> {
           }
         }
       });
-      print("Read value: $receivedData");
       Snackbar.show(ABC.a, "Read value: $receivedData", success: true);
     } catch (e) {
       Snackbar.show(ABC.a, prettyException("Read Error:", e), success: false);
@@ -472,7 +468,6 @@ class _DeviceScreenState extends State<DeviceScreen> {
   Future<void> writeData(String data) async {
     try {
       await targetCharacteristic?.write(data.codeUnits, withoutResponse: true);
-      print("Written value: $data");
       Snackbar.show(ABC.a, "Written value: $data", success: true);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Written value: $data"), backgroundColor: Colors.blue));
     } catch (e) {
@@ -480,15 +475,29 @@ class _DeviceScreenState extends State<DeviceScreen> {
     }
   }
 
-  void sendData(String data) {
+  void sendDataStart(String dataold) {
+    if(dataold.contains('null'))
+    {
+      dataold='20';
+    }
+    String data = 'c$dataold';
     Snackbar.show(ABC.a, data, success: true);
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Sending data: $data"), backgroundColor: Colors.blue));
     if (targetCharacteristic != null) {
       targetCharacteristic!.write(data.codeUnits);
     } else {
-      print("Target characteristic is not set.");
       Snackbar.show(ABC.a, "Target characteristic is not set.", success: false);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Target characteristic is not set."), backgroundColor: Colors.blue));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Target characteristic is not set."), backgroundColor: Colors.blue));
+    }
+  }
+  void sendDataStop(String data) {
+   // Snackbar.show(ABC.a, data, success: true);
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Sending data: $data"), backgroundColor: Colors.blue));
+    if (targetCharacteristic != null) {
+      targetCharacteristic!.write(data.codeUnits);
+    } else {
+      Snackbar.show(ABC.a, "Target characteristic is not set.", success: false);
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Target characteristic is not set."), backgroundColor: Colors.blue));
     }
   }
 
@@ -530,18 +539,19 @@ Widget build(BuildContext context) {
     }
     if(widget.angleFromUserScreen!=0.00)
     {
-      print("530*******");
       inputangle=widget.angleFromUserScreen.toString();
     }
     else{
       inputangle='20';
-      print("534*******");  
     }
-    
+    if(receivedAngle.contains('c')) 
+    {
+      receivedAngle = receivedAngle.replaceAll("c", "");
+    }   
 
   return Scaffold(
     appBar: AppBar(
-      title: Text('Device Screen'),
+      title: const Text('Device Screen'),
     ),
     body: SingleChildScrollView(
         child: Center(
@@ -560,13 +570,13 @@ Widget build(BuildContext context) {
                       labelOffset: 5,
                       startAngle: 180,
                       endAngle: 0,
-                      axisLineStyle: AxisLineStyle(
+                      axisLineStyle: const AxisLineStyle(
                         thicknessUnit: GaugeSizeUnit.factor,
                         thickness: 0.03,
                       ),
-                      majorTickStyle: MajorTickStyle(length: 6, thickness: 4, color: Colors.blue),
-                      minorTickStyle: MinorTickStyle(length: 3, thickness: 3, color: Colors.green),
-                      axisLabelStyle: GaugeTextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14),
+                      majorTickStyle: const MajorTickStyle(length: 6, thickness: 4, color: Colors.blue),
+                      minorTickStyle: const MinorTickStyle(length: 3, thickness: 3, color: Colors.green),
+                      axisLabelStyle: const GaugeTextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14),
                       pointers: <GaugePointer>[
                         NeedlePointer(
                           value: double.parse(receivedAngle), // Convert receivedAngle to double
@@ -576,7 +586,7 @@ Widget build(BuildContext context) {
                           needleStartWidth: 1.5,
                           needleEndWidth: 6,
                           needleColor: Colors.red,
-                          knobStyle: KnobStyle(knobRadius: 0.09),
+                          knobStyle: const KnobStyle(knobRadius: 0.09),
                         ),
                       ],
                       annotations: <GaugeAnnotation>[
@@ -584,7 +594,7 @@ Widget build(BuildContext context) {
                           widget: Container(
                             child: Column(
                               children: <Widget>[
-                                SizedBox(height: 90),
+                                const SizedBox(height: 90),
                                 Text('$receivedAngle\u00B0', style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold)),
                               ],
                             ),
@@ -600,9 +610,9 @@ Widget build(BuildContext context) {
                           sizeUnit: GaugeSizeUnit.factor,
                           startWidth: 0.03,
                           endWidth: 0.03,
-                          gradient: SweepGradient(
-                            colors: const <Color>[Colors.green, Colors.yellow, Colors.red],
-                            stops: const <double>[0.0, 0.5, 1],
+                          gradient: const SweepGradient(
+                            colors: <Color>[Colors.green, Colors.yellow, Colors.red],
+                            stops:  <double>[0.0, 0.5, 1],
                           ),
                         ),
                       ],
@@ -610,7 +620,7 @@ Widget build(BuildContext context) {
                   ],
                   title: GaugeTitle(
                     text: angleText,
-                    textStyle: TextStyle(fontSize: 30.0,fontWeight: FontWeight.bold,color: Colors.blue,),
+                    textStyle: const TextStyle(fontSize: 30.0,fontWeight: FontWeight.bold,color: Colors.blue,),
                   ),
                 ),
               ),
@@ -631,7 +641,7 @@ Widget build(BuildContext context) {
                               GaugeRange(startValue: 80, endValue: 140, color: Colors.orange),
                               GaugeRange(startValue: 140, endValue: 200, color: Colors.red),
                             ],
-                            pointers: <GaugePointer>[
+                            pointers: const <GaugePointer>[
                               //NeedlePointer(value: 75),
                             ],
                             annotations: <GaugeAnnotation>[
@@ -647,7 +657,7 @@ Widget build(BuildContext context) {
                         ],
                         title: GaugeTitle(
                           text: heartText,
-                          textStyle: TextStyle(fontSize: 30.0,fontWeight: FontWeight.bold,color: Colors.blue,),
+                          textStyle: const TextStyle(fontSize: 30.0,fontWeight: FontWeight.bold,color: Colors.blue,),
                         ),
                       ),
                     ),
@@ -693,24 +703,24 @@ Widget build(BuildContext context) {
                       Row(
                         children: [
                           Container(width: 16, height: 16, color: Colors.green),
-                          SizedBox(width: 10),
-                          Text('Low (0-80)'),
+                          const SizedBox(width: 10),
+                          const Text('Low (0-80)'),
                         ],
                       ),
-                      SizedBox(width: 10),
+                      const SizedBox(width: 10),
                       Row(
                         children: [
                           Container(width: 16, height: 16, color: Colors.orange),
-                          SizedBox(width: 10),
-                          Text('Medium (80-140)'),
+                          const SizedBox(width: 10),
+                          const Text('Medium (80-140)'),
                         ],
                       ),
-                      SizedBox(width: 10),
+                      const SizedBox(width: 10),
                       Row(
                         children: [
                           Container(width: 16, height: 16, color: Colors.red),
-                          SizedBox(width: 10),
-                          Text('High (140-200)'),
+                          const SizedBox(width: 10),
+                          const Text('High (140-200)'),
                         ],
                       ),
                     ],
@@ -731,7 +741,7 @@ Widget build(BuildContext context) {
                     //   },
                     //   child: Text('Heart Rate $receivedHeartRate'),
                     // ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -747,11 +757,11 @@ Widget build(BuildContext context) {
                           onPressed: () {
                             // Start action
                             // sendData('c'+inputangle);
-                            print('749************'+inputangle);
                             //sendData('c$inputangle');
-                            sendData('c20');
+                           // sendData('c20');
+                            sendDataStart(inputangle);
                           },
-                          child: Text('Startaa'),
+                          child: const Text('Startaa'),
                         ),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
@@ -763,9 +773,9 @@ Widget build(BuildContext context) {
                             minimumSize: Size(300, 50),
                           ),
                           onPressed: () {
-                            sendData('d');
+                            sendDataStop('d');
                           },
-                          child: Text('Stop'),
+                          child: const Text('Stop'),
                         ),
                       ],
                     ),

@@ -9,6 +9,8 @@ class BluetoothDataProvider extends ChangeNotifier {
   String _receivedHeartRate = "No data received";
   int _finalHeartRate = 0;
   BluetoothCharacteristic? _targetCharacteristic;
+  List<double> _angleData = [];// List to store angle data
+  double _maxAngle = 0.0;
 
   BluetoothDevice? get connectedDevice => _connectedDevice;
   BluetoothDevice get testDevice => _testDevice;
@@ -17,6 +19,7 @@ class BluetoothDataProvider extends ChangeNotifier {
   String get receivedHeartRate => _receivedHeartRate;
   int get finalHeartRate => _finalHeartRate;
   BluetoothCharacteristic? get targetCharacteristic => _targetCharacteristic;
+  List<double> get angleData => _angleData;
 
   void setConnectedDevice(BluetoothDevice device) {
     _connectedDevice = device;
@@ -42,10 +45,18 @@ class BluetoothDataProvider extends ChangeNotifier {
         _receivedAngle = tbarData[0];
         _receivedHeartRate = tbarData.length > 1 ? tbarData[1] : "No Heart Rate data";
         _finalHeartRate = tbarData.length > 1 ? int.parse(tbarData[1]) : 0;
+        _angleData.add(double.tryParse(tbarData[0]) ?? 0.0);
       }
     }
     notifyListeners();
   }
 
+  void refreshMaxAngle()
+  {
+    _maxAngle = 0.0;
+    _angleData = [];
+    notifyListeners();
+  }
+  double get maxAngle => _angleData.isNotEmpty ? _angleData.reduce((a, b) => a > b ? a : b) : 0.0;
   // Add other methods as needed for your application logic
 }
