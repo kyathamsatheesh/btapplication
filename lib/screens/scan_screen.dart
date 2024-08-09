@@ -259,6 +259,8 @@
 
 //------------------
 
+// ignore_for_file: unused_local_variable
+
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
@@ -273,7 +275,7 @@ class ScanScreen extends StatefulWidget {
   State<ScanScreen> createState() => _ScanScreenState();
 }
 
-class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver{
+class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
   List<BluetoothDevice> _systemDevices = [];
   List<ScanResult> _scanResults = [];
   bool _isScanning = false;
@@ -285,47 +287,49 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver{
     super.initState();
     WidgetsBinding.instance!.addObserver(this);
 
-    int counter=0; 
-    int counterForMain=0; 
+    int counter = 0;
+    int counterForMain = 0;
     _scanResultsSubscription = FlutterBluePlus.scanResults.listen((results) {
       _scanResults = results;
-    
-    for (var result in results) {
-      
-          // if (result.device.name == "ESP32_BLE") {
-          //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("We are found ESP32_BLE Device name"),backgroundColor: Colors.blueGrey,));
-          //   break;
-          // }
-          //  break;
-          
+
+      for (var result in results) {
+        // if (result.device.name == "ESP32_BLE") {
+        //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("We are found ESP32_BLE Device name"),backgroundColor: Colors.blueGrey,));
+        //   break;
+        // }
+        //  break;
+
         if (result.device.name == "ESP32_BLE") {
-            counterForMain++;
-            counter++;
-            if(counter==1)
-            {
-              print("device Name:-$result.device.name");
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("We are found with ESP32_BLE Device name"),backgroundColor: Colors.blueGrey,));
-               _connectToDevice(result.device);
-               break;
-            }
-            else
-              print("More than same device found");  
-          }
-          
+          counterForMain++;
+          counter++;
+          if (counter == 1) {
+            print("device Name:-$result.device.name");
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text("We are found with ESP32_BLE Device name"),
+              backgroundColor: Colors.blueGrey,
+            ));
+            _connectToDevice(result.device);
+            break;
+          } else
+            print("More than same device found");
         }
+      }
       //  if(counterForMain==0)
       //     {
       //       print("device Name:-");
       //       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("We are not found ESP32_BLE Device name"),backgroundColor: Colors.blueGrey,));
-            
+
       //     }
-        
+
       if (mounted) {
         setState(() {});
       }
     }, onError: (e) {
       Snackbar.show(ABC.b, prettyException("Scan Error:", e), success: false);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Scan Error::$e"),backgroundColor: Colors.red,));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Scan Error::$e"),
+        backgroundColor: Colors.red,
+      ));
     });
 
     _isScanningSubscription = FlutterBluePlus.isScanning.listen((state) {
@@ -349,9 +353,11 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver{
     try {
       await FlutterBluePlus.startScan(timeout: const Duration(seconds: 15));
     } catch (e) {
-      Snackbar.show(ABC.b, prettyException("Start Scan Error:", e), success: false);
+      Snackbar.show(ABC.b, prettyException("Start Scan Error:", e),
+          success: false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Start Scan Error: $e"), backgroundColor: Colors.red),
+        SnackBar(
+            content: Text("Start Scan Error: $e"), backgroundColor: Colors.red),
       );
     }
   }
@@ -368,16 +374,22 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver{
         ),
       );
     } catch (e) {
-      Snackbar.show(ABC.c, prettyException("Connect Error:", e), success: false);
+      Snackbar.show(ABC.c, prettyException("Connect Error:", e),
+          success: false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Connect Error: $e"), backgroundColor: Colors.red),
+        SnackBar(
+            content: Text("Connect Error: $e"), backgroundColor: Colors.red),
       );
     }
   }
 
   Future onScanPressed() async {
-    Snackbar.show(ABC.b, prettyException("Start Scan Error:", "Errorrr"), success: false);
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Scanning Started...'),backgroundColor: Colors.blue,));
+    Snackbar.show(ABC.b, prettyException("Start Scan Error:", "Errorrr"),
+        success: false);
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      content: Text('Scanning Started...'),
+      backgroundColor: Colors.blue,
+    ));
     try {
       _systemDevices = await FlutterBluePlus.systemDevices;
       print("_systemDevices :------$_systemDevices");
@@ -385,7 +397,10 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver{
       print("error 215 $e");
       Snackbar.show(ABC.b, prettyException("System Devices Error:", e),
           success: false);
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("System Devices Error:$e"),backgroundColor: Colors.red,));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("System Devices Error:$e"),
+        backgroundColor: Colors.red,
+      ));
     }
     try {
       await FlutterBluePlus.startScan(timeout: const Duration(seconds: 4));
@@ -393,30 +408,41 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver{
       print("error 222 $e");
       Snackbar.show(ABC.b, prettyException("Start Scan Error:", e),
           success: false);
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("System Devices Error:$e"),backgroundColor: Colors.red,));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("System Devices Error:$e"),
+        backgroundColor: Colors.red,
+      ));
     }
   }
 
-   @override
+  @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       print("***404**** resumed:- $state");
-      Snackbar.show(ABC.b, prettyException("Start Scan Error:resume","$state"),
+      Snackbar.show(ABC.b, prettyException("Start Scan Error:resume", "$state"),
           success: false);
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("System Devices Error resumed:"),backgroundColor: Colors.red,));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("System Devices Error resumed:"),
+        backgroundColor: Colors.red,
+      ));
     } else if (state == AppLifecycleState.paused) {
-      Snackbar.show(ABC.b, prettyException("Start Scan Error:paused","$state"),
+      Snackbar.show(ABC.b, prettyException("Start Scan Error:paused", "$state"),
           success: false);
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("System Devices Error paused:"),backgroundColor: Colors.red,));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("System Devices Error paused:"),
+        backgroundColor: Colors.red,
+      ));
       // Disconnect from BLE device here
       print("***407**** paused:- $state");
-    }
-    else if (state == AppLifecycleState.detached) {
+    } else if (state == AppLifecycleState.detached) {
       // Disconnect from BLE device here
       print("***407**** detached:- $state");
-      Snackbar.show(ABC.b, prettyException("Start Scan Error:","$state"),
+      Snackbar.show(ABC.b, prettyException("Start Scan Error:", "$state"),
           success: false);
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("System Devices Error detached:"),backgroundColor: Colors.red,));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("System Devices Error detached:"),
+        backgroundColor: Colors.red,
+      ));
     }
   }
 
@@ -456,48 +482,50 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver{
   // }
 
   @override
-Widget build(BuildContext context) {
-  List<ScanResult> filteredResults = _scanResults.where((result) {
-    return result.device.name.startsWith("ESP32_BLE"); // Adjust filter condition
-  }).toList();
+  Widget build(BuildContext context) {
+    List<ScanResult> filteredResults = _scanResults.where((result) {
+      return result.device.name
+          .startsWith("ESP32_BLE"); // Adjust filter condition
+    }).toList();
 
-  return Scaffold(
-    appBar: AppBar(title: Text("BLE IoT App")),
-    body: Column(
-      children: <Widget>[
-        filteredResults.isEmpty
-            ? const Center(
-                child: Text(
-                  "No devices found",
-                  style: TextStyle(fontSize: 18.0),
+    return Scaffold(
+      appBar: AppBar(title: Text("BLE IoT App")),
+      body: Column(
+        children: <Widget>[
+          filteredResults.isEmpty
+              ? const Center(
+                  child: Text(
+                    "No devices found",
+                    style: TextStyle(fontSize: 18.0),
+                  ),
+                )
+              : Expanded(
+                  child: ListView.builder(
+                    itemCount: filteredResults.length,
+                    itemBuilder: (context, index) {
+                      return ScanResultTile(
+                        result: filteredResults[index],
+                        onTap: () async {
+                          await filteredResults[index].device.connect();
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => DeviceScreen(
+                                  device: filteredResults[index].device),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
                 ),
-              )
-            : Expanded(
-                child: ListView.builder(
-                  itemCount: filteredResults.length,
-                  itemBuilder: (context, index) {
-                    return ScanResultTile(
-                      result: filteredResults[index],
-                      onTap: () async {
-                        await filteredResults[index].device.connect();
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => DeviceScreen(device: filteredResults[index].device),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                ),
-              ),
-      ],
-    ),
-    floatingActionButton: FloatingActionButton(
-      onPressed: _isScanning ? null : _startScan,
-      child: Icon(_isScanning ? Icons.stop : Icons.bluetooth_searching_rounded),
-    ),
-  );
-}
-
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _isScanning ? null : _startScan,
+        child:
+            Icon(_isScanning ? Icons.stop : Icons.bluetooth_searching_rounded),
+      ),
+    );
+  }
 }

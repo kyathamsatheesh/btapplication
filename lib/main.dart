@@ -6,28 +6,11 @@ import 'MainScreen.dart';
 //import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() {
-  //WidgetsFlutterBinding.ensureInitialized();
-  //Firebase.initializeApp();
   runApp(ChangeNotifierProvider(create: (context) => BluetoothDataProvider(),
   child: MyApp(),
   ),
   );
 }
-// Future<void> addUser() async {
-//   CollectionReference users = FirebaseFirestore.instance.collection('users');
-//   await users.add({
-//     'angle': '22.00',
-//     'hearrate': 88,
-//     'name': 'Satheesh K',
-//   });
-// }
-
-// Stream<QuerySnapshot> getUsers() {
-//   Firebase.initializeApp();
-//   CollectionReference users = FirebaseFirestore.instance.collection('users');
-//   return users.snapshots();
-// }
-
 
 class MyApp extends StatelessWidget{
 
@@ -37,29 +20,67 @@ class MyApp extends StatelessWidget{
     
   }
 }
-// class MyApp extends StatelessWidget{
+
+
+//Firebase - Firestore configuration - this is testing code for integraion is working or not
+
+// import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:firebase_core/firebase_core.dart';
+// import 'package:flutter/material.dart';
+
+// void main() async {
+//   WidgetsFlutterBinding.ensureInitialized();
+//   await Firebase.initializeApp();
+//   runApp(MyApp());
+// }
+
+// class MyApp extends StatelessWidget {
 //   @override
 //   Widget build(BuildContext context) {
-//     return StreamBuilder<QuerySnapshot>(
-//       stream: getUsers(),
+//       addUser();
+//     return MaterialApp(
+//       home: Scaffold(
+//         appBar: AppBar(title: Text('Firestore Example')),
+//         body: FirestoreData(),
+//       ),
+//     );
+//   }
+// }
+
+// Future<void> addUser() async {
+//   CollectionReference users = FirebaseFirestore.instance.collection('users');
+//   await users.add({
+//     'angle': '15.00',
+//     'hearrate': 90,
+//     'name': 'KKKKKK K',
+//   });
+// }
+
+// class FirestoreData extends StatelessWidget {
+//   final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return FutureBuilder<QuerySnapshot>(
+//       future: firestore.collection('users').get(),
 //       builder: (context, snapshot) {
-//         if (snapshot.hasError) {
-//           return Text('Error: ${snapshot.error}');
-//         }
 //         if (snapshot.connectionState == ConnectionState.waiting) {
-//           return CircularProgressIndicator();
-//         }
-//         if (snapshot.hasData) {
-//           return ListView(
-//             children: snapshot.data!.docs.map((DocumentSnapshot document) {
+//           return const Center(child: CircularProgressIndicator());
+//         } else if (snapshot.hasError) {
+//           return Center(child: Text('Error: ${snapshot.error}'));
+//         } else {
+//           final data = snapshot.data?.docs ?? [];
+//           return ListView.builder(
+//             itemCount: data.length,
+//             itemBuilder: (context, index) {
+//               final doc = data[index];
 //               return ListTile(
-//                 title: Text(document['name']),
-//                 subtitle: Text(document['hearrate']),
+//                 title: Text(doc['name']),
+//                 subtitle: Text(doc['angle']),
 //               );
-//             }).toList(),
+//             },
 //           );
 //         }
-//         return Text('No data found');
 //       },
 //     );
 //   }

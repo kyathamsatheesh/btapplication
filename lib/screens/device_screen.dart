@@ -160,7 +160,7 @@
 //                   majorTickStyle: MajorTickStyle(length: 6, thickness: 4, color: Colors.blue),
 //                   minorTickStyle: MinorTickStyle(length: 3, thickness: 3, color: Colors.green),
 //                   axisLabelStyle: GaugeTextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14),
-                  
+
 //                   pointers: <GaugePointer>[
 //                     NeedlePointer(
 //                       value: double.parse(receivedAngle), // Convert receivedAngle to double
@@ -311,7 +311,7 @@
 //                       },
 //                       child: Text('Stop'),
 //                     ),
-                    
+
 //                   ],
 //                 ),
 //                 SizedBox(height: 20),
@@ -344,7 +344,6 @@
 
 // }
 
-
 //import 'dart:ffi';
 
 import 'package:btapplication/statemanagment/bluetooth_data_provider.dart';
@@ -373,11 +372,11 @@ class _DeviceScreenState extends State<DeviceScreen> {
   String receivedData = "No data received";
   String receivedAngle = "0";
   String receivedHeartRate = "No data received";
-  int finalHeartRate=0;
+  int finalHeartRate = 0;
   String angleText = "Angle";
   String heartText = "Heart Rate";
 
-  int _selectedIndex = 0; // Track the selected index
+  //int _selectedIndex = 0; // Track the selected index
 
   @override
   void initState() {
@@ -390,10 +389,13 @@ class _DeviceScreenState extends State<DeviceScreen> {
       await widget.device.connect();
       discoverServices();
       // Update connected device in provider
-      Provider.of<BluetoothDataProvider>(context, listen: false).setConnectedDevice(widget.device);
-      Provider.of<BluetoothDataProvider>(context, listen: false).setConnectedtESTDevice(widget.device);
+      Provider.of<BluetoothDataProvider>(context, listen: false)
+          .setConnectedDevice(widget.device);
+      Provider.of<BluetoothDataProvider>(context, listen: false)
+          .setConnectedtESTDevice(widget.device);
     } catch (e) {
-      Snackbar.show(ABC.a, prettyException("Connection Error:", e), success: false);
+      Snackbar.show(ABC.a, prettyException("Connection Error:", e),
+          success: false);
     }
   }
 
@@ -409,7 +411,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
               orElse: () => throw Exception('Characteristic not found!'),
             );
           });
-          
+
           // Set up notifications to listen for changes
           await targetCharacteristic!.setNotifyValue(true);
           targetCharacteristic!.value.listen((value) {
@@ -423,25 +425,34 @@ class _DeviceScreenState extends State<DeviceScreen> {
                 int size = tbarData.length;
                 if (size > 0) {
                   receivedAngle = tbarData[0];
-                  receivedHeartRate = tbarData.length > 1 ? tbarData[1] : "No Heart Rate data";
-                  finalHeartRate = tbarData.length > 1 ? int.parse(tbarData[1]) : 0;
+                  receivedHeartRate =
+                      tbarData.length > 1 ? tbarData[1] : "No Heart Rate data";
+                  finalHeartRate =
+                      tbarData.length > 1 ? int.parse(tbarData[1]) : 0;
+                  print(
+                      " receivedAngle : - $receivedAngle : Final Heartrate : - $finalHeartRate");
                 }
               }
             });
-            Snackbar.show(ABC.a, "Received value: $receivedData", success: true);
-            Provider.of<BluetoothDataProvider>(context, listen: false).updateData(receivedData);
-            Provider.of<BluetoothDataProvider>(context, listen: false).setCharacteristicDevice(targetCharacteristic!);
+            Snackbar.show(ABC.a, "Received value: $receivedData",
+                success: true);
+            Provider.of<BluetoothDataProvider>(context, listen: false)
+                .updateData(receivedData);
+            Provider.of<BluetoothDataProvider>(context, listen: false)
+                .setCharacteristicDevice(targetCharacteristic!);
           });
           break;
         }
       }
     } catch (e) {
-      Snackbar.show(ABC.a, prettyException("Discover Services Error:", e), success: false);
+      Snackbar.show(ABC.a, prettyException("Discover Services Error:", e),
+          success: false);
     }
   }
 
   Future<void> readData() async {
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Reading data...')));
+    ScaffoldMessenger.of(context)
+        .showSnackBar(const SnackBar(content: Text('Reading data...')));
     try {
       var value = await targetCharacteristic?.read();
       setState(() {
@@ -454,7 +465,8 @@ class _DeviceScreenState extends State<DeviceScreen> {
           int size = tbarData.length;
           if (size > 0) {
             receivedAngle = tbarData[0];
-            receivedHeartRate = tbarData.length > 1 ? tbarData[1] : "No Heart Rate data";
+            receivedHeartRate =
+                tbarData.length > 1 ? tbarData[1] : "No Heart Rate data";
             finalHeartRate = tbarData.length > 1 ? int.parse(tbarData[1]) : 0;
           }
         }
@@ -469,35 +481,42 @@ class _DeviceScreenState extends State<DeviceScreen> {
     try {
       await targetCharacteristic?.write(data.codeUnits, withoutResponse: true);
       Snackbar.show(ABC.a, "Written value: $data", success: true);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Written value: $data"), backgroundColor: Colors.blue));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("Written value: $data"), backgroundColor: Colors.blue));
     } catch (e) {
       Snackbar.show(ABC.a, prettyException("Write Error:", e), success: false);
     }
   }
 
   void sendDataStart(String dataold) {
-    if(dataold.contains('null'))
-    {
-      dataold='20';
+    if (dataold.contains('null')) {
+      dataold = '20';
     }
     String data = 'c$dataold';
     Snackbar.show(ABC.a, data, success: true);
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Sending data: $data"), backgroundColor: Colors.blue));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Sending data: $data"), backgroundColor: Colors.blue));
     if (targetCharacteristic != null) {
       targetCharacteristic!.write(data.codeUnits);
     } else {
       Snackbar.show(ABC.a, "Target characteristic is not set.", success: false);
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Target characteristic is not set."), backgroundColor: Colors.blue));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Target characteristic is not set."),
+          backgroundColor: Colors.blue));
     }
   }
+
   void sendDataStop(String data) {
-   // Snackbar.show(ABC.a, data, success: true);
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Sending data: $data"), backgroundColor: Colors.blue));
+    // Snackbar.show(ABC.a, data, success: true);
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Sending data: $data"), backgroundColor: Colors.blue));
     if (targetCharacteristic != null) {
       targetCharacteristic!.write(data.codeUnits);
     } else {
       Snackbar.show(ABC.a, "Target characteristic is not set.", success: false);
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Target characteristic is not set."), backgroundColor: Colors.blue));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Target characteristic is not set."),
+          backgroundColor: Colors.blue));
     }
   }
 
@@ -506,20 +525,23 @@ class _DeviceScreenState extends State<DeviceScreen> {
     widget.device.disconnect();
     super.dispose();
   }
+
   _callVibration() async {
     // Vibration.vibrate(); //default and one time vibrate
-    Vibration.vibrate(pattern: [500, 1000, 500, 2000, 500, 3000, 500, 500],intensities: [0, 128, 0, 255, 0, 64, 0, 255],); 
+    Vibration.vibrate(
+      pattern: [500, 1000, 500, 2000, 500, 3000, 500, 500],
+      intensities: [0, 128, 0, 255, 0, 64, 0, 255],
+    );
     //Pattern: wait 0.5s, vibrate 1s, wait 0.5s, vibrate 2s, wait 0.5s, vibrate 3s, wait 0.5s, vibrate 0.5s
   }
 
   @override
-Widget build(BuildContext context) {
-
+  Widget build(BuildContext context) {
     //final bluetoothDataProvider = Provider.of<BluetoothDataProvider>(context);
 
-  // Determine the color based on the heart rate value
+    // Determine the color based on the heart rate value
     Color heartRateColor;
-    String inputangle='20';
+    String inputangle = '20';
     if (finalHeartRate < 80) {
       heartRateColor = Colors.green; // Low heart rate
     } else if (finalHeartRate <= 140) {
@@ -532,28 +554,23 @@ Widget build(BuildContext context) {
       heartRateColor = Colors.red; // High heart rate
       //_callVibration();
     }
-    if(finalHeartRate>=100)
-    {
-      
+    if (finalHeartRate >= 110) {
       _callVibration();
     }
-    if(widget.angleFromUserScreen!=0.00)
-    {
-      inputangle=widget.angleFromUserScreen.toString();
+    if (widget.angleFromUserScreen != 0.00) {
+      inputangle = widget.angleFromUserScreen.toString();
+    } else {
+      inputangle = '20';
     }
-    else{
-      inputangle='20';
-    }
-    if(receivedAngle.contains('c')) 
-    {
+    if (receivedAngle.contains('c')) {
       receivedAngle = receivedAngle.replaceAll("c", "");
-    }   
+    }
 
-  return Scaffold(
-    appBar: AppBar(
-      title: const Text('Device Screen'),
-    ),
-    body: SingleChildScrollView(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Device Screen'),
+      ),
+      body: SingleChildScrollView(
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -574,12 +591,18 @@ Widget build(BuildContext context) {
                         thicknessUnit: GaugeSizeUnit.factor,
                         thickness: 0.03,
                       ),
-                      majorTickStyle: const MajorTickStyle(length: 6, thickness: 4, color: Colors.blue),
-                      minorTickStyle: const MinorTickStyle(length: 3, thickness: 3, color: Colors.green),
-                      axisLabelStyle: const GaugeTextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14),
+                      majorTickStyle: const MajorTickStyle(
+                          length: 6, thickness: 4, color: Colors.blue),
+                      minorTickStyle: const MinorTickStyle(
+                          length: 3, thickness: 3, color: Colors.green),
+                      axisLabelStyle: const GaugeTextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14),
                       pointers: <GaugePointer>[
                         NeedlePointer(
-                          value: double.parse(receivedAngle), // Convert receivedAngle to double
+                          value: double.parse(
+                              receivedAngle), // Convert receivedAngle to double
                           needleLength: 0.85,
                           enableAnimation: true,
                           animationType: AnimationType.linear,
@@ -595,7 +618,10 @@ Widget build(BuildContext context) {
                             child: Column(
                               children: <Widget>[
                                 const SizedBox(height: 90),
-                                Text('$receivedAngle\u00B0', style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold)),
+                                Text('$receivedAngle\u00B0',
+                                    style: const TextStyle(
+                                        fontSize: 40,
+                                        fontWeight: FontWeight.bold)),
                               ],
                             ),
                           ),
@@ -611,8 +637,12 @@ Widget build(BuildContext context) {
                           startWidth: 0.03,
                           endWidth: 0.03,
                           gradient: const SweepGradient(
-                            colors: <Color>[Colors.green, Colors.yellow, Colors.red],
-                            stops:  <double>[0.0, 0.5, 1],
+                            colors: <Color>[
+                              Colors.green,
+                              Colors.yellow,
+                              Colors.red
+                            ],
+                            stops: <double>[0.0, 0.5, 1],
                           ),
                         ),
                       ],
@@ -620,7 +650,11 @@ Widget build(BuildContext context) {
                   ],
                   title: GaugeTitle(
                     text: angleText,
-                    textStyle: const TextStyle(fontSize: 30.0,fontWeight: FontWeight.bold,color: Colors.blue,),
+                    textStyle: const TextStyle(
+                      fontSize: 30.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue,
+                    ),
                   ),
                 ),
               ),
@@ -637,9 +671,18 @@ Widget build(BuildContext context) {
                             minimum: 0,
                             maximum: 200,
                             ranges: <GaugeRange>[
-                              GaugeRange(startValue: 0, endValue: 80, color: Colors.green),
-                              GaugeRange(startValue: 80, endValue: 140, color: Colors.orange),
-                              GaugeRange(startValue: 140, endValue: 200, color: Colors.red),
+                              GaugeRange(
+                                  startValue: 0,
+                                  endValue: 80,
+                                  color: Colors.green),
+                              GaugeRange(
+                                  startValue: 80,
+                                  endValue: 140,
+                                  color: Colors.orange),
+                              GaugeRange(
+                                  startValue: 140,
+                                  endValue: 200,
+                                  color: Colors.red),
                             ],
                             pointers: const <GaugePointer>[
                               //NeedlePointer(value: 75),
@@ -647,160 +690,137 @@ Widget build(BuildContext context) {
                             annotations: <GaugeAnnotation>[
                               GaugeAnnotation(
                                 widget: Container(
-                                  child: Text('$finalHeartRate', style: TextStyle(fontSize: 80, fontWeight: FontWeight.bold,color: heartRateColor)),
+                                  child: Text('$finalHeartRate',
+                                      style: TextStyle(
+                                          fontSize: 80,
+                                          fontWeight: FontWeight.bold,
+                                          color: heartRateColor)),
                                 ),
                                 angle: 90,
-                               // positionFactor: 1.0,
+                                // positionFactor: 1.0,
                               ),
                             ],
                           ),
                         ],
                         title: GaugeTitle(
                           text: heartText,
-                          textStyle: const TextStyle(fontSize: 30.0,fontWeight: FontWeight.bold,color: Colors.blue,),
+                          textStyle: const TextStyle(
+                            fontSize: 30.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue,
+                          ),
                         ),
                       ),
                     ),
-                    // Container(
-                    //   padding: EdgeInsets.all(16.0),
-                    //   child: Column(
-                    //     crossAxisAlignment: CrossAxisAlignment.start,
-                    //     children: [
-                    //       Row(
-                    //         children: [
-                    //           Container(width: 16, height: 16, color: Colors.green),
-                    //           SizedBox(width: 8),
-                    //           Text('Low (0-80)'),
-                    //         ],
-                    //       ),
-                    //       SizedBox(height: 30),
-                    //       Row(
-                    //         children: [
-                    //           Container(width: 16, height: 16, color: Colors.orange),
-                    //           SizedBox(width: 8),
-                    //           Text('Medium (80-140)'),
-                    //         ],
-                    //       ),
-                    //       SizedBox(height: 30),
-                    //       Row(
-                    //         children: [
-                    //           Container(width: 16, height: 16, color: Colors.red),
-                    //           SizedBox(width: 8),
-                    //           Text('High (140-200)'),
-                    //         ],
-                    //       ),
-                    //     ],
-                    //   ),
-                    // ),
                   ],
                 ),
               ),
               SizedBox(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Row(
-                        children: [
-                          Container(width: 16, height: 16, color: Colors.green),
-                          const SizedBox(width: 10),
-                          const Text('Low (0-80)'),
-                        ],
-                      ),
-                      const SizedBox(width: 10),
-                      Row(
-                        children: [
-                          Container(width: 16, height: 16, color: Colors.orange),
-                          const SizedBox(width: 10),
-                          const Text('Medium (80-140)'),
-                        ],
-                      ),
-                      const SizedBox(width: 10),
-                      Row(
-                        children: [
-                          Container(width: 16, height: 16, color: Colors.red),
-                          const SizedBox(width: 10),
-                          const Text('High (140-200)'),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                    // SizedBox(height: 20),
-                    // ElevatedButton(
-                    //   style: ElevatedButton.styleFrom(
-                    //     shadowColor: Colors.greenAccent,
-                    //     elevation: 3,
-                    //     shape: RoundedRectangleBorder(
-                    //       borderRadius: BorderRadius.circular(32.0),
-                    //     ),
-                    //     minimumSize: Size(300, 50),
-                    //   ),
-                    //   onPressed: () {
-                    //     //  sendData('c20');
-                    //   },
-                    //   child: Text('Heart Rate $receivedHeartRate'),
-                    // ),
-                    const SizedBox(height: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            shadowColor: Colors.greenAccent,
-                            elevation: 3,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(32.0),
-                            ),
-                            minimumSize: Size(300, 50),
-                          ),
-                          onPressed: () {
-                            // Start action
-                            // sendData('c'+inputangle);
-                            //sendData('c$inputangle');
-                           // sendData('c20');
-                            sendDataStart(inputangle);
-                          },
-                          child: const Text('Startaa'),
-                        ),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            shadowColor: Colors.greenAccent,
-                            elevation: 3,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(32.0),
-                            ),
-                            minimumSize: Size(300, 50),
-                          ),
-                          onPressed: () {
-                            sendDataStop('d');
-                          },
-                          child: const Text('Stop'),
-                        ),
+                        Container(width: 16, height: 16, color: Colors.green),
+                        const SizedBox(width: 10),
+                        const Text('Low (0-80)'),
                       ],
                     ),
-                    // SizedBox(height: 20),
-                    // Row(
-                    //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    //   children: [
-                    //     ElevatedButton(
-                    //       style: ElevatedButton.styleFrom(
-                    //         shadowColor: Colors.greenAccent,
-                    //         elevation: 3,
-                    //         shape: RoundedRectangleBorder(
-                    //           borderRadius: BorderRadius.circular(32.0),
-                    //         ),
-                    //         minimumSize: Size(300, 50),
-                    //       ),
-                    //       onPressed: () {
-                    //         readData();
-                    //         _callVibration();
-                    //       },
-                    //       child: Text('Read'),
-                    //     ),
-                    //   ],
-                    // ),
+                    const SizedBox(width: 10),
+                    Row(
+                      children: [
+                        Container(width: 16, height: 16, color: Colors.orange),
+                        const SizedBox(width: 10),
+                        const Text('Medium (80-140)'),
+                      ],
+                    ),
+                    const SizedBox(width: 10),
+                    Row(
+                      children: [
+                        Container(width: 16, height: 16, color: Colors.red),
+                        const SizedBox(width: 10),
+                        const Text('High (140-200)'),
+                      ],
+                    ),
                   ],
+                ),
+              ),
+              // SizedBox(height: 20),
+              // ElevatedButton(
+              //   style: ElevatedButton.styleFrom(
+              //     shadowColor: Colors.greenAccent,
+              //     elevation: 3,
+              //     shape: RoundedRectangleBorder(
+              //       borderRadius: BorderRadius.circular(32.0),
+              //     ),
+              //     minimumSize: Size(300, 50),
+              //   ),
+              //   onPressed: () {
+              //     //  sendData('c20');
+              //   },
+              //   child: Text('Heart Rate $receivedHeartRate'),
+              // ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      shadowColor: Colors.greenAccent,
+                      elevation: 3,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(32.0),
+                      ),
+                      minimumSize: Size(300, 50),
+                    ),
+                    onPressed: () {
+                      // Start action
+                      // sendData('c'+inputangle);
+                      //sendData('c$inputangle');
+                      // sendData('c20');
+                      sendDataStart(inputangle);
+                    },
+                    child: const Text('Start'),
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      shadowColor: Colors.greenAccent,
+                      elevation: 3,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(32.0),
+                      ),
+                      minimumSize: Size(300, 50),
+                    ),
+                    onPressed: () {
+                      sendDataStop('d');
+                    },
+                    child: const Text('Stop'),
+                  ),
+                ],
+              ),
+              // SizedBox(height: 20),
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              //   children: [
+              //     ElevatedButton(
+              //       style: ElevatedButton.styleFrom(
+              //         shadowColor: Colors.greenAccent,
+              //         elevation: 3,
+              //         shape: RoundedRectangleBorder(
+              //           borderRadius: BorderRadius.circular(32.0),
+              //         ),
+              //         minimumSize: Size(300, 50),
+              //       ),
+              //       onPressed: () {
+              //         readData();
+              //         _callVibration();
+              //       },
+              //       child: Text('Read'),
+              //     ),
+              //   ],
+              // ),
+            ],
           ),
         ),
       ),
@@ -832,8 +852,6 @@ Widget build(BuildContext context) {
       //     ),
       //   ],
       // ),
-  );
+    );
+  }
 }
-
-}
- 
