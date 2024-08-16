@@ -1,7 +1,8 @@
+import 'package:btapplication/charts/heart_chart.dart';
 import 'package:btapplication/screens/dashboard.dart';
+import 'package:btapplication/screens/firestore_data_display.dart';
 import 'package:btapplication/screens/user_creation.dart';
 import 'package:flutter/material.dart';
-import '../commonscreen/profilescreen.dart'; // Assuming you have a profile screen
 import 'BottomNavBar.dart';
 
 class MainScreen extends StatefulWidget {
@@ -14,8 +15,8 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _widgetOptions = [
     const FlutterBlueApp(),
     UserCreationScreen(),
-   const ProfileScreen(),
-   const ProfileScreen()
+    HeartRateChart(),
+    FirestoreDataDisplay(),
   ];
 
   void _onItemTapped(int index) {

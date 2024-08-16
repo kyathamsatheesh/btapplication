@@ -15,8 +15,7 @@
 //       padding: EdgeInsets.symmetric(horizontal: 60, vertical: 20),
 //       duration: Duration(milliseconds: 800),
 //       tabBackgroundColor: Theme.of(context).primaryColor,
-      
-      
+
 //       tabs: [
 //         GButton(
 //           icon: LineIcons.bluetooth,
@@ -74,8 +73,8 @@ class BottomNavBar extends StatelessWidget {
               text: 'Add User',
             ),
             GButton(
-              icon: LineIcons.user,
-              text: 'User List',
+              icon: LineIcons.barChart,
+              text: 'Charts',
             ),
             GButton(
               icon: LineIcons.airbnb,

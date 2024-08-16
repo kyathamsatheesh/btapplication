@@ -346,6 +346,7 @@
 
 //import 'dart:ffi';
 
+import 'package:btapplication/firebase_firestore/data_store_CRUD.dart';
 import 'package:btapplication/statemanagment/bluetooth_data_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
@@ -358,13 +359,19 @@ class DeviceScreen extends StatefulWidget {
   final BluetoothDevice device;
   final BluetoothDevice? device1;
   final double? angleFromUserScreen;
-  DeviceScreen({required this.device, this.device1, this.angleFromUserScreen});
+  final String? userNameFromUserScreen;
+  DeviceScreen(
+      {required this.device,
+      this.device1,
+      this.angleFromUserScreen,
+      this.userNameFromUserScreen});
 
   @override
   _DeviceScreenState createState() => _DeviceScreenState();
 }
 
 class _DeviceScreenState extends State<DeviceScreen> {
+  String userName = '';
   BluetoothService? targetService;
   BluetoothCharacteristic? targetCharacteristic;
   final String serviceId = "4fafc201-1fb5-459e-8fcc-c5c9c331914b";
@@ -375,7 +382,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
   int finalHeartRate = 0;
   String angleText = "Angle";
   String heartText = "Heart Rate";
-
+  final DataStoreCrud userService = DataStoreCrud();
   //int _selectedIndex = 0; // Track the selected index
 
   @override
@@ -399,6 +406,14 @@ class _DeviceScreenState extends State<DeviceScreen> {
     }
   }
 
+  int _seconds = 0; // Variable to keep track of the seconds
+
+  void _incrementSeconds() {
+    // setState(() {
+    _seconds++; // Increment the seconds each time the button is clicked
+    // });
+  }
+
   Future<void> discoverServices() async {
     try {
       List<BluetoothService> services = await widget.device.discoverServices();
@@ -414,6 +429,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
 
           // Set up notifications to listen for changes
           await targetCharacteristic!.setNotifyValue(true);
+
           targetCharacteristic!.value.listen((value) {
             setState(() {
               receivedData = String.fromCharCodes(value);
@@ -425,13 +441,25 @@ class _DeviceScreenState extends State<DeviceScreen> {
                 int size = tbarData.length;
                 if (size > 0) {
                   receivedAngle = tbarData[0];
+
+                  if (receivedAngle.contains('c')) {
+                    receivedAngle = receivedAngle.replaceAll("c", "");
+                  }
                   receivedHeartRate =
                       tbarData.length > 1 ? tbarData[1] : "No Heart Rate data";
                   finalHeartRate =
                       tbarData.length > 1 ? int.parse(tbarData[1]) : 0;
                   print(
-                      " receivedAngle : - $receivedAngle : Final Heartrate : - $finalHeartRate");
+                      " receivedAngle : - $receivedAngle : Final Heartrate : - $finalHeartRate : User Name:- $userName ");
                 }
+                _seconds++;
+
+                userService.addUserSerialData(
+                    double.parse(receivedAngle),
+                    finalHeartRate,
+                    userName,
+                    _seconds); //Storing data into firestore
+                print('User added successfully!');
               }
             });
             Snackbar.show(ABC.a, "Received value: $receivedData",
@@ -564,6 +592,11 @@ class _DeviceScreenState extends State<DeviceScreen> {
     }
     if (receivedAngle.contains('c')) {
       receivedAngle = receivedAngle.replaceAll("c", "");
+    }
+    if (widget.userNameFromUserScreen != null &&
+        widget.userNameFromUserScreen!.isNotEmpty) {
+      userName = widget.userNameFromUserScreen.toString();
+      print("595:::$userName");
     }
 
     return Scaffold(
