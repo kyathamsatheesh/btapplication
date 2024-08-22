@@ -281,6 +281,16 @@ class _HeartRateChartState extends State<HeartRateChart> {
                     },
                   ),
                 ),
+                topTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: false, // Disable the top titles if not needed
+                  ),
+                ),
+                rightTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: false, // Disable the right titles if not needed
+                  ),
+                ),
               ),
             ),
           ),

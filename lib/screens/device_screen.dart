@@ -453,7 +453,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
                       " receivedAngle : - $receivedAngle : Final Heartrate : - $finalHeartRate : User Name:- $userName ");
                 }
                 _seconds++;
-
+                print('Seconds....$_seconds');
                 userService.addUserSerialData(
                     double.parse(receivedAngle),
                     finalHeartRate,

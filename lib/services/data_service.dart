@@ -8,8 +8,10 @@ class DataService {
         FirebaseFirestore.instance.collection('serial_data_new');
 
     try {
-      QuerySnapshot snapshot =
-          await collection.orderBy('seconds', descending: true).get();
+      QuerySnapshot snapshot = await collection
+          .orderBy('seconds', descending: true)
+          .where('username', isEqualTo: 'Satheesh')
+          .get();
 
       return snapshot.docs.map((doc) {
         return HeartRateData(

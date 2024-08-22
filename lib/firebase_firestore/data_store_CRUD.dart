@@ -31,18 +31,27 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class DataStoreCrud {
   Future<void> addUserSerialData(
       double angle, int heartRate, String name, int seconds) async {
-    CollectionReference users =
-        FirebaseFirestore.instance.collection('serial_data_new');
-    await users.add({
-      'angle': angle,
-      'hearrate': heartRate,
-      'username': name,
-      'insertedon':
-          FieldValue.serverTimestamp(), // Add current server timestamp
-      'seconds': seconds,
-      'cycle_unq_id': '1234',
-      'max_angle_on_cycle': '',
-    });
+    try {
+      CollectionReference users =
+          FirebaseFirestore.instance.collection('serial_data_new');
+      // Print values being sent to Firestore
+      print('Adding data to Firestore: '
+          'angle: $angle, heartRate: $heartRate, name: $name, seconds: $seconds');
+
+      await users.add({
+        'angle': angle,
+        'hearrate': heartRate,
+        'username': name,
+        'insertedon':
+            FieldValue.serverTimestamp(), // Add current server timestamp
+        'seconds': seconds,
+        'cycle_unq_id': '1234',
+        'max_angle_on_cycle': '',
+      });
+      print('Data added successfully!');
+    } catch (e) {
+      print('Error inserting data: ${e.toString()}');
+    }
   }
 }
 
