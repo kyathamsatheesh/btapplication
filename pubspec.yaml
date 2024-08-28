@@ -50,8 +50,9 @@ dependencies:
   path: ^1.8.0
   cloud_firestore: ^4.14.0
   firebase_core: ^2.24.2
-  connectivity_plus: ^6.0.5
+  connectivity_plus: ^3.0.3
   fl_chart: ^0.68.0
+  flutter_native_splash: ^2.2.15
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -62,6 +63,10 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^3.0.0
+
+flutter_native_splash:
+  color: "#FFFFFF"  # Background color
+  image: assets/splash_screen.png  # Path to your splash screen image
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
