@@ -3,9 +3,15 @@
     <!-- <item>
         <color android:color="@color/splash_background"/>
     </item> -->
-    <item>
+    <!-- <item>
         <bitmap
             android:src="@drawable/splash_screen"
-            android:gravity="center"/>
+            android:gravity="fill"/>
+    </item> -->
+    <!-- <item>
+        <bitmap android:gravity="fill" android:src="@drawable/splash_background"/>
+    </item> -->
+    <item>
+        <bitmap android:gravity="fill" android:src="@drawable/splash_screen"/>
     </item>
 </layer-list>
